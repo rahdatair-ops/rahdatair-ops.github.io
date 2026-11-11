@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>قیمت تتر</title>
+<style>
+body {
+    background: #101827;
+    color: white;
+    font-family: Tahoma;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.box {
+    background: #1e293b;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+#price {
+    font-size: 42px;
+    color: #22c55e;
+    font-weight: bold;
+    margin: 25px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>قیمت تتر</h2>
+    <div id="price">Loading...</div>
+    <small id="status"></small>
+</div>
+
+<script>
+async function updatePrice() {
+    try {
+        const response = await fetch('./price.php');
+        if (!response.ok) throw new Error('API Error');
+
+        const data = await response.json();
+
+        document.getElementById('price').innerText =
+            Number(data.price).toLocaleString('en-US');
+
+        document.getElementById('status').innerText =
+            'آخرین بروزرسانی: ' + new Date().toLocaleTimeString('fa-IR');
+
+    } catch (e) {
+        document.getElementById('status').innerText =
+            'خطا در دریافت قیمت';
+    }
+}
+
+updatePrice();
+setInterval(updatePrice, 5000);
+</script>
+
+</body>
+</html>
