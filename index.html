@@ -4,57 +4,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>قیمت تتر</title>
+<title>قیمت لحظه‌ای تتر</title>
 <style>
 body {
-    background: #101827;
-    color: white;
-    font-family: Tahoma;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  background:#101827;
+  color:white;
+  font-family:tahoma;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
 }
-.box {
-    background: #1e293b;
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
+.card {
+  background:#1e293b;
+  padding:35px;
+  border-radius:20px;
+  text-align:center;
+  width:300px;
 }
 #price {
-    font-size: 42px;
-    color: #22c55e;
-    font-weight: bold;
-    margin: 25px;
+  font-size:40px;
+  color:#22c55e;
+  font-weight:bold;
+  direction:ltr;
+  margin:25px 0;
 }
+#status {color:#94a3b8;font-size:12px}
 </style>
 </head>
 <body>
 
-<div class="box">
-    <h2>قیمت تتر</h2>
-    <div id="price">Loading...</div>
-    <small id="status"></small>
+<div class="card">
+  <h2>قیمت لحظه‌ای تتر</h2>
+  <div id="price">293</div>
+  <div id="status">قیمت اولیه دریافت شد</div>
 </div>
 
 <script>
+const API =
+"https://api1.tabdeal.org/r/api/v1/depth?symbol=USDTIRT";
+
 async function updatePrice() {
-    try {
-        const response = await fetch('./price.php');
-        if (!response.ok) throw new Error('API Error');
+  const status = document.getElementById("status");
 
-        const data = await response.json();
+  try {
+    const response = await fetch(API, {
+      cache: "no-store"
+    });
 
-        document.getElementById('price').innerText =
-            Number(data.price).toLocaleString('en-US');
+    if (!response.ok) throw new Error("HTTP " + response.status);
 
-        document.getElementById('status').innerText =
-            'آخرین بروزرسانی: ' + new Date().toLocaleTimeString('fa-IR');
+    const data = await response.json();
+    const value = data.asks[0][0];
 
-    } catch (e) {
-        document.getElementById('status').innerText =
-            'خطا در دریافت قیمت';
-    }
+    document.getElementById("price").textContent =
+      Number(value).toLocaleString("en-US");
+
+    status.textContent =
+      "آخرین بروزرسانی: " +
+      new Date().toLocaleTimeString("fa-IR");
+
+  } catch (error) {
+    status.textContent = "بروزرسانی ناموفق؛ قیمت قبلی حفظ شد";
+    console.error(error);
+  }
 }
 
 updatePrice();
